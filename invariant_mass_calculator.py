@@ -4,7 +4,7 @@ import uproot
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-def inv_m(file, p1, p2, charge = 0, flavor1 = 0, flavor2 = 0, save_df = False, graph = True, mass = 0):
+def inv_m(file, p1, p2, charge = 0, flavor1 = 0, flavor2 = 0, save_df = False, graph = False, mass = 0):
     file = uproot.open(file)
     tree = file["Delphes"]
     
@@ -247,14 +247,13 @@ def inv_m(file, p1, p2, charge = 0, flavor1 = 0, flavor2 = 0, save_df = False, g
         event_2 = np.array(event_2)
         
         data = {
-                "pt_1": pt_1,
-                "pt_2": pt_2,
-                "eta_1": eta_1,
-                "eta_2": eta_2,
-                "phi_1": phi_1,
-                "phi_2": phi_2,
-                "charge_1": cha_1,
-                "charge_2": cha_2
+                "PRI_pt_1": pt_1,
+                "PRI_pt_2": pt_2,
+                "PRI_eta_1": eta_1,
+                "PRI_eta_2": eta_2,
+                "PRI_phi_1": phi_1,
+                "PRI_phi_2": phi_2,
+                "event_1": event_1,
                     }
                 
         data = pd.DataFrame(data) 
@@ -376,13 +375,13 @@ def inv_m(file, p1, p2, charge = 0, flavor1 = 0, flavor2 = 0, save_df = False, g
         charge_12 = np.array(charge_12)
         
         data = {
-                "pt_1": pt_1,
-                "pt_2": pt_2,
-                "eta_1": eta_1,
-                "eta_2": eta_2,
-                "phi_1": phi_1,
-                "phi_2": phi_2,
-                "charge_12": charge_12,
+                "PRI_pt_1": pt_1,
+                "PRI_pt_2": pt_2,
+                "PRI_eta_1": eta_1,
+                "PRI_eta_2": eta_2,
+                "PRI_phi_1": phi_1,
+                "PRI_phi_2": phi_2,
+                "event_1": event_1,
                     }
                 
         data = pd.DataFrame(data) 
@@ -478,14 +477,13 @@ def inv_m(file, p1, p2, charge = 0, flavor1 = 0, flavor2 = 0, save_df = False, g
         event_2 = np.array(event_2)
         
         data = {
-                "pt_1": pt_1,
-                "pt_2": pt_2,
-                "eta_1": eta_1,
-                "eta_2": eta_2,
-                "phi_1": phi_1,
-                "phi_2": phi_2,
-                "charge_1": cha_1,
-                "charge_2": cha_2
+                "PRI_pt_1": pt_1,
+                "PRI_pt_2": pt_2,
+                "PRI_eta_1": eta_1,
+                "PRI_eta_2": eta_2,
+                "PRI_phi_1": phi_1,
+                "PRI_phi_2": phi_2,
+                "event_1": event_1,
                     }
                 
         data = pd.DataFrame(data) 
@@ -544,32 +542,34 @@ def inv_m(file, p1, p2, charge = 0, flavor1 = 0, flavor2 = 0, save_df = False, g
         event_2 = np.array(event_2)
         
         data = {
-                "pt_1": pt_1,
-                "pt_2": pt_2,
-                "eta_1": eta_1,
-                "eta_2": eta_2,
-                "phi_1": phi_1,
-                "phi_2": phi_2,
-                "charge_12": cha_12,
+                "PRI_pt_1": pt_1,
+                "PRI_pt_2": pt_2,
+                "PRI_eta_1": eta_1,
+                "PRI_eta_2": eta_2,
+                "PRI_phi_1": phi_1,
+                "PRI_phi_2": phi_2,
+                "event_1": event_1,
                     }
                 
         data = pd.DataFrame(data) 
 
     # Compute the momentum components
-    data["p1_x"] = data["pt_1"]*np.cos(data["phi_1"])
-    data["p1_y"] = data["pt_1"]*np.sin(data["phi_1"])
-    data["p1_z"] = data["pt_1"]*np.sinh(data["eta_1"])
+    data["p1_x"] = data["PRI_pt_1"]*np.cos(data["PRI_phi_1"])
+    data["p1_y"] = data["PRI_pt_1"]*np.sin(data["PRI_phi_1"])
+    data["p1_z"] = data["PRI_pt_1"]*np.sinh(data["PRI_eta_1"])
 
-    data["p2_x"] = data["pt_2"]*np.cos(data["phi_2"])
-    data["p2_y"] = data["pt_2"]*np.sin(data["phi_2"])
-    data["p2_z"] = data["pt_2"]*np.sinh(data["eta_2"])
+    data["p2_x"] = data["PRI_pt_2"]*np.cos(data["PRI_phi_2"])
+    data["p2_y"] = data["PRI_pt_2"]*np.sin(data["PRI_phi_2"])
+    data["p2_z"] = data["PRI_pt_2"]*np.sinh(data["PRI_eta_2"])
 
     # Then we can calculate the invariant mass
 
-    data["inv_m"] = np.sqrt((np.sqrt(data["p1_x"]**2 + data["p1_y"]**2 + data["p1_z"]**2) + 
+    data["DER_INV_m"] = np.sqrt((np.sqrt(data["p1_x"]**2 + data["p1_y"]**2 + data["p1_z"]**2) + 
                                 np.sqrt(data["p2_x"]**2 + data["p2_y"]**2 + data["p2_z"]**2))**2 - 
                                 (data["p1_x"] + data["p2_x"])**2 - (data["p1_y"] + data["p2_y"])**2 -
                                 (data["p1_z"] + data["p2_z"])**2 )
+    
+    data = data.drop(columns = ["p1_x", "p1_y", "p1_z", "p2_x", "p2_y", "p2_z"])
 
     # To save the dataframe as a .csv file:
     if save_df == True:
@@ -592,3 +592,4 @@ def inv_m(file, p1, p2, charge = 0, flavor1 = 0, flavor2 = 0, save_df = False, g
         plt.legend()
         plt.grid(True, alpha = 0.3)
         plt.show()
+    return data
